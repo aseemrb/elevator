@@ -34,8 +34,9 @@ def simulate():
                         f.upb.on = False
                         if e.state!='opening' and e.state!='opened':
                             e.state = 'opening'
+                        elevSet = True
+                        break
                     elevSet = True
-                    break
 
     
             if not elevSet:
@@ -179,6 +180,13 @@ def simulate():
 
     for e in elevators:
         e.update(app.w, SH, floors)
+        for i in range(10):
+            if i in e.dest:
+                app.f.itemconfig(panels[e.number-1].b[i], fill='#6f9')
+            else:
+                app.f.itemconfig(panels[e.number-1].b[i], fill='#9bc')
+
+
     for f in floors:
         f.display.update(app.w)
     if simstate:
@@ -211,15 +219,81 @@ class App:
         if not simstate:
             return
         x, y = event.x, event.y
-        print 'clicked at [', x, y, ']'
-        # if x>=100 and x<=250 and y>=50 and y<=250:
-        #     # panel 1
-        # elif x>=350 and x<=500 and y>=50 and y<=250:
-        #     # panel 2
-        # elif x>=100 and x<=250 and y>=350 and y<=550:
-        #     # panel 3
-        # elif x>=350 and x<=500 and y>=350 and y<=550:
-        #     # panel 4
+        eidx = -1
+        if x>=100 and x<=250 and y>=50 and y<=250:
+            # panel 1
+            eidx = 0
+            x-=100
+            y-=50
+        elif x>=350 and x<=500 and y>=50 and y<=250:
+            # panel 2
+            eidx = 1
+            x-=350
+            y-=50
+        elif x>=100 and x<=250 and y>=350 and y<=550:
+            # panel 3
+            eidx = 2
+            x-=100
+            y-=350
+        elif x>=350 and x<=500 and y>=350 and y<=550:
+            # panel 4
+            eidx = 3
+            x-=350
+            y-=350
+
+        if eidx!=-1 and x>=0 and y>=0:
+            b = -1
+            if x<50:
+                # 1, 4, 7, open
+                if y<40:
+                    b = 7
+                elif y<80:
+                    b = 4
+                elif y<120:
+                    b = 1
+                elif y<160:
+                    b = 10
+
+            elif x<100:
+                # 0, 2, 5, 8, EM
+                if y<40:
+                    b = 8
+                elif y<80:
+                    b = 5
+                elif y<120:
+                    b = 2
+                elif y<160:
+                    b = 0
+                elif y<200:
+                    b = 12
+            elif x<150:
+                # 3, 6, 9, close
+                if y<40:
+                    b = 9
+                elif y<80:
+                    b = 6
+                elif y<120:
+                    b = 3
+                elif y<160:
+                    b = 11
+
+            if b!=-1:
+                # print eidx, b
+                if b<10 and b not in elevators[eidx].dest and elevators[eidx].floor.number!=b:
+                    elevators[eidx].dest.append(b)
+                elif b==10 and elevators[eidx].state!='moving':
+                    elevators[eidx].state = 'opening'
+                elif b==11 and elevators[eidx].state=='opening' or elevators[eidx].state=='opened':
+                    elevators[eidx].state = 'closing'
+
+                # # Emergency
+                # elif b==12:
+                #     if elevators[eidx].state=='moving':
+                #         self.dest = self.dest[0:1]
+                #     else:
+                #         elevators[eidx].dest = []
+                #         if elevators[eidx].state!='opened' or elevators[eidx].state!='opening':
+                #             elevators[eidx].state = 'opening'
 
 
     def callelev(self, event):
