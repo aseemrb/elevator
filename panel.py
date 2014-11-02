@@ -4,6 +4,8 @@ class Panel(object):
         self.num = number
         self.elev = None
         self.b = []
+        self.pushin = None
+        self.pushout = None
         self.blabel = []
         if self.num==1:
             self.body = w.create_rectangle(100, 50, 250, 210, fill="#000")
@@ -44,8 +46,12 @@ class Panel(object):
             fill="#9bc", activefill="#fff", width=2))
         self.b.append(w.create_rectangle(self.x+100, self.y+120, self.x+150, self.y+160, outline="black", 
             fill="#9bc", activefill="#fff", width=2))
-        # self.b.append(w.create_rectangle(self.x+50, self.y+160, self.x+100, self.y+200, outline="black", 
-            # fill="#9bc", activefill="#fff", width=2))
+        self.b.append(w.create_rectangle(self.x+50, self.y+160, self.x+100, self.y+200, outline="black", 
+            fill="#9bc", activefill="#fff", width=2))
+        self.pushin = w.create_rectangle(self.x, self.y+160, self.x+50, self.y+200, outline="black", 
+            fill="#aaa", activefill="#fff", width=2)
+        self.pushout = w.create_rectangle(self.x+100, self.y+160, self.x+150, self.y+200, outline="black", 
+            fill="#aaa", activefill="#fff", width=2)
 
     def makelabels(self, w):
         self.blabel.append(w.create_text(w.coords(self.b[0])[0]+25, w.coords(self.b[0])[1]+20, text='G'))
@@ -60,4 +66,6 @@ class Panel(object):
         self.blabel.append(w.create_text(w.coords(self.b[9])[0]+25, w.coords(self.b[9])[1]+20, text='9'))
         self.blabel.append(w.create_text(w.coords(self.b[10])[0]+25, w.coords(self.b[10])[1]+20, text='<>'))
         self.blabel.append(w.create_text(w.coords(self.b[11])[0]+25, w.coords(self.b[11])[1]+20, text='><'))
-        # self.bemergencylabel = w.create_text(w.coords(self.b[12])[0]+25, w.coords(self.b[12])[1]+20, text='EM')
+        self.bemergencylabel = w.create_text(w.coords(self.b[12])[0]+25, w.coords(self.b[12])[1]+20, text='EM')
+        self.pushinlabel = w.create_text(w.coords(self.pushin)[0]+25, w.coords(self.pushin)[1]+20, text='+')
+        self.pushoutlabel = w.create_text(w.coords(self.pushout)[0]+25, w.coords(self.pushout)[1]+20, text='-')

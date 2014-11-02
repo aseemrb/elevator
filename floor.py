@@ -71,7 +71,11 @@ class Optelevdisplay(object):
 
     def update(self, w):
         if len(self.floor.elevs)>0:
-            w.itemconfig(self.floor.display.body, fill='#6fa')
+            for e in self.floor.elevs:
+                if e.overloaded:
+                    return
+            w.itemconfig(self.body, fill='#6fa')
+            w.itemconfig(self.bodytext, text='--')
             for e in self.floor.elevs:
                 if self.num in e.dest:
                     if self.num==0:

@@ -10,7 +10,6 @@ elevators = []
 floors = []
 panels = []
 simstate = False
-# speed = 1
 
 def simulate():
     global SH, elevators, floors, speed
@@ -22,6 +21,8 @@ def simulate():
 
         elev1 = None
         elev2 = None
+        elevd = None
+        minelevd = 10
         
         """Up button found on"""
         if (f.number<9 and f.upb.on) or (f.number==9 and f.dwb.on):
@@ -29,14 +30,17 @@ def simulate():
 
             # Elevator standing on the current floor
             for e in elevators:
-                if (f.number in e.dest) or e.floor.number==f.number:
-                    if e.floor.number==f.number and e.state!='moving':
-                        f.upb.on = False
-                        if e.state!='opening' and e.state!='opened':
-                            e.state = 'opening'
-                        elevSet = True
-                        break
-                    elevSet = True
+                if not e.overloaded:
+                    if (f.number in e.dest) or e.floor.number==f.number:
+                        if e.floor.number==f.number and e.state!='moving':
+                            f.upb.on = False
+                            if e.state!='opening' and e.state!='opened':
+                                e.state = 'opening'
+                            elevSet = True
+                            break
+                        if abs(e.floor.number - f.number)<minelevd:
+                            elevd = e
+                            minelevd = abs(e.floor.number - f.number)
 
     
             if not elevSet:
@@ -46,7 +50,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if e.direc=='up' or e.direc=='':
+                            if (not e.overloaded) and (e.direc=='up' or e.direc==''):
                                 elev1 = e
                                 elevSet = True
                                 if e.state=='closed':
@@ -59,7 +63,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if e.direc=='':
+                            if (not e.overloaded) and e.direc=='':
                                 elev2 = e
                                 elevSet = True
                                 break
@@ -75,29 +79,31 @@ def simulate():
                 if elev2!=None:
                     dist2 = abs(elev2.floor.number - f.number)
 
-                # The elevator below is closer
-                if dist1<=dist2 and elev1!=None:
-                    elev1.dest.append(f.number)
-                    elev1.direc = 'up'
 
-                # The elevator above is closer
-                elif dist2<dist1 and elev2!=None:
-                    elev2.dest.append(f.number)
-                    elev2.direc = 'down'
+                if minelevd>dist1 or minelevd>dist2:
+                    # The elevator below is closer
+                    if dist1<=dist2 and elev1!=None:
+                        elev1.dest.append(f.number)
+                        elev1.direc = 'up'
 
-                # No optimal elevators found
-                if elev1==None and elev2==None:
-                    mindist = 10
-                    for i in range(0, 10, 1):
-                        if len(floors[i].elevs)>0:
-                            e = floors[i].elevs[0]
-                            if abs(e.floor.number-f.number) < mindist:
-                                mindist = abs(e.floor.number-f.number)
-                                elev1 = e
-                    # elev1 is now the most available elevator somehow
-                    elev1.dest.append(f.number)
-                    if elev1.direc=='' and elev1.state!='closed' and elev1.state!='closing':
-                        elev1.state = 'closing'
+                    # The elevator above is closer
+                    elif dist2<dist1 and elev2!=None:
+                        elev2.dest.append(f.number)
+                        elev2.direc = 'down'
+
+                    # No optimal elevators found
+                    if elev1==None and elev2==None:
+                        mindist = 10
+                        for i in range(0, 10, 1):
+                            if len(floors[i].elevs)>0:
+                                e = floors[i].elevs[0]
+                                if abs(e.floor.number-f.number) < mindist:
+                                    mindist = abs(e.floor.number-f.number)
+                                    elev1 = e
+                        # elev1 is now the most available elevator somehow
+                        elev1.dest.append(f.number)
+                        if elev1.direc=='' and elev1.state!='closed' and elev1.state!='closing':
+                            elev1.state = 'closing'
 
 
         """Down button found on"""
@@ -105,14 +111,18 @@ def simulate():
             elevSet = False
 
             # Elevator standing on the current floor
+            elevd = None
             for e in elevators:
-                if (f.number in e.dest) or e.floor.number==f.number:
+                if ((f.number in e.dest) or e.floor.number==f.number) and not e.overloaded:
                     if e.floor.number==f.number and e.state!='moving':
                         f.dwb.on = False
                         if e.state!='opening' and e.state!='opened':
                             e.state = 'opening'
-                    elevSet = True
-                    break
+                        elevSet = True
+                        break
+                    if abs(e.floor.number - f.number)<minelevd:
+                        elevd = e
+                        minelevd = abs(e.floor.number - f.number)
 
     
             if not elevSet:
@@ -122,7 +132,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if e.direc=='down' or e.direc=='':
+                            if not e.overloaded and (e.direc=='down' or e.direc==''):
                                 elev1 = e
                                 elevSet = True
                                 if e.state=='closed':
@@ -135,7 +145,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if e.direc=='':
+                            if e.direc=='' and not e.overloaded:
                                 elev2 = e
                                 elevSet = True
                                 break
@@ -151,29 +161,30 @@ def simulate():
                 if elev2!=None:
                     dist2 = abs(elev2.floor.number - f.number)
 
-                # The elevator above is closer
-                if dist1<=dist2 and elev1!=None:
-                    elev1.dest.append(f.number)
-                    elev1.direc = 'down'
+                if minelevd>dist1 or minelevd>dist2:
+                    # The elevator above is closer
+                    if dist1<=dist2 and elev1!=None:
+                        elev1.dest.append(f.number)
+                        elev1.direc = 'down'
 
-                # The elevator below is closer
-                elif dist2<dist1 and elev2!=None:
-                    elev2.dest.append(f.number)
-                    elev2.direc = 'up'
+                    # The elevator below is closer
+                    elif dist2<dist1 and elev2!=None:
+                        elev2.dest.append(f.number)
+                        elev2.direc = 'up'
 
-                # No optimal elevators found
-                if elev1==None and elev2==None:
-                    mindist = 10
-                    for i in range(0, 10, 1):
-                        if len(floors[i].elevs)>0:
-                            e = floors[i].elevs[0]
-                            if abs(e.floor.number-f.number) < mindist:
-                                mindist = abs(e.floor.number-f.number)
-                                elev1 = e
-                    # elev1 is now the most available elevator somehow
-                    elev1.dest.append(f.number)
-                    if elev1.direc=='' and elev1.state!='closed' and elev1.state!='closing':
-                        elev1.state = 'closing'
+                    # No optimal elevators found
+                    if elev1==None and elev2==None:
+                        mindist = 10
+                        for i in range(0, 10, 1):
+                            if len(floors[i].elevs)>0:
+                                e = floors[i].elevs[0]
+                                if abs(e.floor.number-f.number) < mindist:
+                                    mindist = abs(e.floor.number-f.number)
+                                    elev1 = e
+                        # elev1 is now the most available elevator somehow
+                        elev1.dest.append(f.number)
+                        if elev1.direc=='' and elev1.state!='closed' and elev1.state!='closing':
+                            elev1.state = 'closing'
 
 
 
@@ -182,7 +193,7 @@ def simulate():
         e.update(app.w, SH, floors)
         for i in range(10):
             if i in e.dest:
-                app.f.itemconfig(panels[e.number-1].b[i], fill='#6f9')
+                app.f.itemconfig(panels[e.number-1].b[i], fill='#0f9')
             else:
                 app.f.itemconfig(panels[e.number-1].b[i], fill='#9bc')
 
@@ -253,6 +264,8 @@ class App:
                     b = 1
                 elif y<160:
                     b = 10
+                elif y<200:
+                    b = 101 # pushin code
 
             elif x<100:
                 # 0, 2, 5, 8, EM
@@ -276,6 +289,8 @@ class App:
                     b = 3
                 elif y<160:
                     b = 11
+                elif y<200:
+                    b = 102 # pushout code
 
             if b!=-1:
                 # print eidx, b
@@ -283,17 +298,33 @@ class App:
                     elevators[eidx].dest.append(b)
                 elif b==10 and elevators[eidx].state!='moving':
                     elevators[eidx].state = 'opening'
-                elif b==11 and elevators[eidx].state=='opening' or elevators[eidx].state=='opened':
+                elif b==11 and (elevators[eidx].state=='opening' or elevators[eidx].state=='opened'):
                     elevators[eidx].state = 'closing'
+                elif b==101 and elevators[eidx].state!='moving':
+                    elevators[eidx].people += 1
+                    if elevators[eidx].state!='opened' and elevators[eidx].state!='opening':
+                        elevators[eidx].state='opening'
+                elif b==102 and elevators[eidx].state!='moving':
+                    if elevators[eidx].state!='opened' and elevators[eidx].state!='opening':
+                        elevators[eidx].state='opening'
+                    elevators[eidx].people -= 1
+                    if elevators[eidx].people<0:
+                        elevators[eidx].people = 0
 
-                # # Emergency
-                # elif b==12:
-                #     if elevators[eidx].state=='moving':
-                #         self.dest = self.dest[0:1]
-                #     else:
-                #         elevators[eidx].dest = []
-                #         if elevators[eidx].state!='opened' or elevators[eidx].state!='opening':
-                #             elevators[eidx].state = 'opening'
+
+
+                # Emergency
+                elif b==12:
+                    if elevators[eidx].state=='moving':
+                        for i in elevators[eidx].dest[1:]:
+                            self.w.itemconfig(floors[i].display.bodytext, text='--')
+                        elevators[eidx].dest = elevators[eidx].dest[0:1]
+                    else:
+                        elevators[eidx].dest = []
+                        for i in elevators[eidx].dest:
+                            self.w.itemconfig(floors[i].display.bodytext, text='--')
+                        if elevators[eidx].state!='opened' or elevators[eidx].state!='opening':
+                            elevators[eidx].state = 'opening'
 
 
     def callelev(self, event):

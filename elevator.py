@@ -13,8 +13,10 @@ class Elevator(object):
         self.vel = 0
         self.floor = floor
         self.people = 0
-        self.capacity = 6000
+        self.capacity = 6
         self.timer = 0
+        self.overloaded = False
+        self.ovlabel = None
 
         # state: moving, closed, opening, opened, closing
         self.state = 'closed'
@@ -32,6 +34,28 @@ class Elevator(object):
 
     def update(self, w, SH, floors):
         """ Called each frame. """
+        if self.overloaded and self.ovlabel==None:
+            if self.people-self.capacity==1:
+                self.ovlabel = w.create_text(self.x+50, self.y+30, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore person')
+            else:
+                self.ovlabel = w.create_text(self.x+50, self.y+30, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore people')
+
+        if self.people>self.capacity:
+            w.itemconfig(self.floor.display.body, fill='#f77')
+            w.itemconfig(self.floor.display.bodytext, text='LOAD')
+            if self.people-self.capacity==1:
+                w.itemconfig(self.ovlabel, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore person')
+            else:
+                w.itemconfig(self.ovlabel, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore people')
+            self.overloaded = True
+            if self.state!='opening' and self.state!='opened':
+                self.state='opening'
+        else:
+            self.overloaded = False
+            if self.ovlabel is not None:
+                w.delete(self.ovlabel)
+                self.ovlabel = None
+
         if self.vel!=0:
             for i in range(10):
 
@@ -75,8 +99,6 @@ class Elevator(object):
             if self.floor.number>0:
                 self.floor.dwb.on = False
 
-            # Do something for the timer here
-
             coordslist = w.coords(self.doorway)
             w.coords(self.doorway, coordslist[0]-self.opendistance,
                 coordslist[1], coordslist[2]+self.opendistance, 
@@ -97,6 +119,8 @@ class Elevator(object):
         # Door opened
         if w.coords(self.doorway)[0]<=100*self.number+5:
             self.state = 'opened'
+            if self.overloaded:
+                return
             self.timer += 10
             if self.timer>=opentime:
                 self.state = 'closing'
@@ -118,6 +142,8 @@ class Elevator(object):
                     self.vel = speed
                     self.state = 'moving'
 
+        if len(self.dest)==0:
+            self.direc=''
         self.x = w.coords(self.body)[0]
         self.y = w.coords(self.body)[1]
         w.update()
