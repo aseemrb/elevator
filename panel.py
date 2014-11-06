@@ -17,7 +17,9 @@ class Panel(object):
             self.body = w.create_rectangle(350, 350, 500, 510, fill="#000")
         self.x = w.coords(self.body)[0]
         self.y = w.coords(self.body)[1]
-        self.label = w.create_text(self.x+80, self.y-10, text='Elevator - '+str(self.num), font="Purisa 10 bold")
+        self.label = w.create_text(self.x+50, self.y-10, text='Elevator - '+str(self.num), font="Purisa 10 bold")
+        self.info = w.create_rectangle(self.x+115, self.y-30, self.x+140, self.y-5, fill="#fff")
+        self.infolabel = None
         self.makebuttons(w)
         self.makelabels(w)
         self.pcounterb = w.create_rectangle(self.x, self.y+200, self.x+150, self.y+240, fill='#4c5')
@@ -25,35 +27,35 @@ class Panel(object):
 
     def makebuttons(self, w):
         self.b.append(w.create_rectangle(self.x+50, self.y+120, self.x+100, self.y+160, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x, self.y+80, self.x+50, self.y+120, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+50, self.y+80, self.x+100, self.y+120, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+100, self.y+80, self.x+150, self.y+120, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x, self.y+40, self.x+50, self.y+80, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+50, self.y+40, self.x+100, self.y+80, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+100, self.y+40, self.x+150, self.y+80, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x, self.y, self.x+50, self.y+40, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+50, self.y, self.x+100, self.y+40, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+100, self.y, self.x+150, self.y+40, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x, self.y+120, self.x+50, self.y+160, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+100, self.y+120, self.x+150, self.y+160, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.b.append(w.create_rectangle(self.x+50, self.y+160, self.x+100, self.y+200, outline="black", 
-            fill="#9bc", activefill="#fff", width=2))
+            fill="#9bc", width=2))
         self.pushin = w.create_rectangle(self.x, self.y+160, self.x+50, self.y+200, outline="black", 
-            fill="#aaa", activefill="#fff", width=2)
+            fill="#aaa", width=2)
         self.pushout = w.create_rectangle(self.x+100, self.y+160, self.x+150, self.y+200, outline="black", 
-            fill="#aaa", activefill="#fff", width=2)
+            fill="#aaa", width=2)
 
     def makelabels(self, w):
         self.blabel.append(w.create_text(w.coords(self.b[0])[0]+25, w.coords(self.b[0])[1]+20, text='G'))

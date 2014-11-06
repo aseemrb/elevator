@@ -12,7 +12,7 @@ panels = []
 simstate = False
 
 def simulate():
-    global SH, elevators, floors, speed
+    global SH, elevators, floors, speed, panels
     for f in floors:
         if f.number<9:
             f.upb.update(app.w, SH)
@@ -44,7 +44,58 @@ def simulate():
 
     
             if not elevSet:
-    
+                # # If already an ideal elevator is coming
+                # for e in elevators:
+                #     if len(e.dest)==1 and e.dest[0]==f.number:
+                #         elevSet = True
+                #         if e.state=='closed':
+                #             break
+                # if elevSet:
+                #     break
+
+                # # Finding the elevator that will reach the fastest
+                # elevf1 = None
+                # elevf2 = None
+                # for i in range(f.number-1, -1, -1):
+                #     if len(floors[i].elevs)>0:
+                #         elevSet = False
+                #         for e in floors[i].elevs:
+                #             if (e.people<e.capacity) and len(e.dest)==0:
+                #                 elevf1 = e
+                #                 elevSet = True
+                #                 if e.state=='closed':
+                #                     break
+                #         if elevf1!=None:
+                #             break
+                
+                # for i in range(f.number+1, 10, 1):
+                #     if len(floors[i].elevs)>0:
+                #         elevSet = False
+                #         for e in floors[i].elevs:
+                #             if (e.people<e.capacity) and len(e.dest)==0:
+                #                 elev2 = e
+                #                 elevSet = True
+                #                 if e.state=='closed':
+                #                     break
+                #         if elevf2!=None:
+                #             break
+
+                # dist1 = 10
+                # dist2 = 10
+                # if elevf1!=None:
+                #     dist1 = f.number-elevf1.floor.number
+                # if elevf2!=None:
+                #     dist1 = elevf2.floor.number-f.number
+                # if elevf1!=None and dist1<=dist2:
+                #     elevf1.dest.append(f.number)
+                #     elevf1.direc = 'up'
+                #     continue
+                # elif elevf2!=None and dist2<=dist1:
+                #     elevf2.dest.append(f.number)
+                #     elevf2.direc = 'down'
+                #     continue
+
+
                 # Nearest elevator below (moving up or stationary) = elev1
                 for i in range(f.number-1, -1, -1):
                     if len(floors[i].elevs)>0:
@@ -197,9 +248,28 @@ def simulate():
             else:
                 app.f.itemconfig(panels[e.number-1].b[i], fill='#9bc')
 
-
     for f in floors:
         f.display.update(app.w)
+
+    for p in panels:
+        if p.elev.direc=='up':
+            if p.elev.floor.number==0:
+                app.f.itemconfig(p.infolabel, text='G ↑')
+            else:
+                app.f.itemconfig(p.infolabel, text=str(p.elev.floor.number)+' ↑')
+        if p.elev.direc=='down':
+            if p.elev.floor.number==0:
+                app.f.itemconfig(p.infolabel, text='G ↓')
+            else:
+                app.f.itemconfig(p.infolabel, text=str(p.elev.floor.number)+' ↓')
+        if p.elev.direc=='':
+            if p.elev.floor.number==0:
+                app.f.itemconfig(p.infolabel, text='G')
+            else:
+                app.f.itemconfig(p.infolabel, text=str(p.elev.floor.number))
+
+
+        
     if simstate:
         master.after(5, simulate)
 
@@ -373,9 +443,14 @@ class App:
             floors.append(f)
             
     def makepanels(self):
-        global panels
+        global panels, elevators
         for i in range(4):
             p = Panel(self.f, i+1)
+            p.elev = elevators[i]
+            if p.elev.floor.number==0:
+                p.infolabel = self.f.create_text(p.x+128, p.y-17, text='G')
+            else:
+                p.infolabel = self.f.create_text(p.x+128, p.y-17, text=str(p.elev.floor.number))
             panels.append(p)
 
     def makelevs(self):
