@@ -18,7 +18,7 @@ class Panel(object):
         self.x = w.coords(self.body)[0]
         self.y = w.coords(self.body)[1]
         self.label = w.create_text(self.x+50, self.y-10, text='Elevator - '+str(self.num), font="Purisa 10 bold")
-        self.info = w.create_rectangle(self.x+115, self.y-30, self.x+140, self.y-5, fill="#fff")
+        self.info = w.create_rectangle(self.x+113, self.y-30, self.x+142, self.y-5, fill="#fff")
         self.infolabel = None
         self.makebuttons(w)
         self.makelabels(w)

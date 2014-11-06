@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-#
-
 from Tkinter import *
 from elevator import *
 from floor import *
@@ -10,7 +9,6 @@ elevators = []
 floors = []
 panels = []
 simstate = False
-
 def simulate():
     global SH, elevators, floors, speed, panels
     for f in floors:
@@ -18,7 +16,6 @@ def simulate():
             f.upb.update(app.w, SH)
         if f.number>0:
             f.dwb.update(app.w, SH)
-
         elev1 = None
         elev2 = None
         elevd = None
@@ -27,7 +24,6 @@ def simulate():
         """Up button found on"""
         if (f.number<9 and f.upb.on) or (f.number==9 and f.dwb.on):
             elevSet = False
-
             # Elevator standing on the current floor
             for e in elevators:
                 if e.people<e.capacity:
@@ -42,7 +38,6 @@ def simulate():
                             elevd = e
                             minelevd = abs(e.floor.number - f.number)
 
-    
             if not elevSet:
                 # # If already an ideal elevator is coming
                 # for e in elevators:
@@ -52,7 +47,6 @@ def simulate():
                 #             break
                 # if elevSet:
                 #     break
-
                 # # Finding the elevator that will reach the fastest
                 # elevf1 = None
                 # elevf2 = None
@@ -67,7 +61,6 @@ def simulate():
                 #                     break
                 #         if elevf1!=None:
                 #             break
-                
                 # for i in range(f.number+1, 10, 1):
                 #     if len(floors[i].elevs)>0:
                 #         elevSet = False
@@ -79,7 +72,6 @@ def simulate():
                 #                     break
                 #         if elevf2!=None:
                 #             break
-
                 # dist1 = 10
                 # dist2 = 10
                 # if elevf1!=None:
@@ -94,7 +86,6 @@ def simulate():
                 #     elevf2.dest.append(f.number)
                 #     elevf2.direc = 'down'
                 #     continue
-
 
                 # Nearest elevator below (moving up or stationary) = elev1
                 for i in range(f.number-1, -1, -1):
@@ -130,7 +121,6 @@ def simulate():
                 if elev2!=None:
                     dist2 = abs(elev2.floor.number - f.number)
 
-
                 if minelevd>dist1 or minelevd>dist2:
                     # The elevator below is closer
                     if dist1<=dist2 and elev1!=None:
@@ -156,11 +146,9 @@ def simulate():
                         if elev1.direc=='' and elev1.state!='closed' and elev1.state!='closing':
                             elev1.state = 'closing'
 
-
         """Down button found on"""
         if (f.number>0 and f.dwb.on) or (f.number==0 and f.upb.on):
             elevSet = False
-
             # Elevator standing on the current floor
             elevd = None
             for e in elevators:
@@ -176,8 +164,7 @@ def simulate():
                         minelevd = abs(e.floor.number - f.number)
 
     
-            if not elevSet:
-    
+            if not elevSet:    
                 # Nearest elevator above (moving down or stationary) = elev1
                 for i in range(f.number+1, 10, 1):
                     if len(floors[i].elevs)>0:
@@ -237,9 +224,6 @@ def simulate():
                         if elev1.direc=='' and elev1.state!='closed' and elev1.state!='closing':
                             elev1.state = 'closing'
 
-
-
-
     for e in elevators:
         e.update(app.w, SH, floors)
         for i in range(10):
@@ -267,12 +251,9 @@ def simulate():
                 app.f.itemconfig(p.infolabel, text='G')
             else:
                 app.f.itemconfig(p.infolabel, text=str(p.elev.floor.number))
-
-
         
     if simstate:
         master.after(5, simulate)
-
 
 class App:
     def __init__(self, master):
@@ -283,16 +264,13 @@ class App:
         self.w.pack(side=LEFT)
         self.m.pack(side=TOP)
         self.f.pack(side=LEFT)
-        
         self.makefloors()
         self.makelevs()
-        
         self.start = Button(self.m, text="Start Simulation", command=self.sim)
         self.start.pack(side=LEFT)
         self.stop = Button(self.m, text="Stop Simulation", command=self.stop, state=DISABLED)
         self.stop.pack(side=LEFT)
         self.makepanels()
-
         self.f.bind("<Button-1>", self.operateelev)
         self.f.create_text(50, 610, text='Status Key:')
         self.f.create_rectangle(110, 600, 130, 620, fill='#4c5')
@@ -302,7 +280,6 @@ class App:
         self.f.create_rectangle(290, 600, 310, 620, fill='#c54')
         self.f.create_text(340, 610, text='Overload')
         
-
     def operateelev(self, event):
         if not simstate:
             return
@@ -370,7 +347,6 @@ class App:
                     b = 102 # pushout code
 
             if b!=-1:
-                # print eidx, b
                 if b<10 and b not in elevators[eidx].dest and elevators[eidx].floor.number!=b:
                     elevators[eidx].dest.append(b)
                 elif b==10 and elevators[eidx].state!='moving':
@@ -398,8 +374,6 @@ class App:
                     elif elevators[eidx].people <= elevators[eidx].capacity:
                         self.f.itemconfig(panels[eidx].pcounterb, fill='#4c5')
 
-
-
                 # Emergency
                 elif b==12:
                     if elevators[eidx].state=='moving':
@@ -412,7 +386,6 @@ class App:
                         elevators[eidx].dest = []
                         if elevators[eidx].state!='opened' or elevators[eidx].state!='opening':
                             elevators[eidx].state = 'opening'
-
 
     def callelev(self, event):
         if not simstate:
@@ -473,16 +446,12 @@ class App:
         self.start.config(state=NORMAL)
         self.stop.config(state=DISABLED)
         
-
 master = Tk()
-
 posx = 0
 posy = 0
 SW = master.winfo_screenwidth()
 SH = master.winfo_screenheight()
 master.wm_geometry("%dx%d+%d+%d" % (SW, SH, posx, posy))
-
 Label(master, text="Elevator Simulation",font="Purisa 18 bold underline").pack()
 app = App(master)
-
 master.mainloop()
