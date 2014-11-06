@@ -30,7 +30,7 @@ def simulate():
 
             # Elevator standing on the current floor
             for e in elevators:
-                if not e.overloaded:
+                if e.people<e.capacity:
                     if (f.number in e.dest) or e.floor.number==f.number:
                         if e.floor.number==f.number and e.state!='moving':
                             f.upb.on = False
@@ -50,7 +50,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if (not e.overloaded) and (e.direc=='up' or e.direc==''):
+                            if (e.people<e.capacity) and (e.direc=='up' or e.direc==''):
                                 elev1 = e
                                 elevSet = True
                                 if e.state=='closed':
@@ -63,7 +63,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if (not e.overloaded) and e.direc=='':
+                            if (e.people<e.capacity) and e.direc=='':
                                 elev2 = e
                                 elevSet = True
                                 break
@@ -113,7 +113,7 @@ def simulate():
             # Elevator standing on the current floor
             elevd = None
             for e in elevators:
-                if ((f.number in e.dest) or e.floor.number==f.number) and not e.overloaded:
+                if ((f.number in e.dest) or e.floor.number==f.number) and (e.people<e.capacity):
                     if e.floor.number==f.number and e.state!='moving':
                         f.dwb.on = False
                         if e.state!='opening' and e.state!='opened':
@@ -132,7 +132,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if not e.overloaded and (e.direc=='down' or e.direc==''):
+                            if (e.people<e.capacity) and (e.direc=='down' or e.direc==''):
                                 elev1 = e
                                 elevSet = True
                                 if e.state=='closed':
@@ -145,7 +145,7 @@ def simulate():
                     if len(floors[i].elevs)>0:
                         elevSet = False
                         for e in floors[i].elevs:
-                            if e.direc=='' and not e.overloaded:
+                            if e.direc=='' and (e.people<e.capacity):
                                 elev2 = e
                                 elevSet = True
                                 break
@@ -224,6 +224,13 @@ class App:
         self.makepanels()
 
         self.f.bind("<Button-1>", self.operateelev)
+        self.f.create_text(50, 610, text='Status Key:')
+        self.f.create_rectangle(110, 600, 130, 620, fill='#4c5')
+        self.f.create_text(160, 610, text='Stable')
+        self.f.create_rectangle(210, 600, 230, 620, fill='#47c')
+        self.f.create_text(250, 610, text='Full')
+        self.f.create_rectangle(290, 600, 310, 620, fill='#c54')
+        self.f.create_text(340, 610, text='Overload')
         
 
     def operateelev(self, event):
@@ -302,6 +309,11 @@ class App:
                     elevators[eidx].state = 'closing'
                 elif b==101 and elevators[eidx].state!='moving':
                     elevators[eidx].people += 1
+                    self.f.itemconfig(panels[eidx].pcounter, text='People Inside: '+str(elevators[eidx].people))
+                    if elevators[eidx].people == elevators[eidx].capacity:
+                        self.f.itemconfig(panels[eidx].pcounterb, fill='#47c')
+                    elif elevators[eidx].people > elevators[eidx].capacity:
+                        self.f.itemconfig(panels[eidx].pcounterb, fill='#c54')
                     if elevators[eidx].state!='opened' and elevators[eidx].state!='opening':
                         elevators[eidx].state='opening'
                 elif b==102 and elevators[eidx].state!='moving':
@@ -310,6 +322,11 @@ class App:
                     elevators[eidx].people -= 1
                     if elevators[eidx].people<0:
                         elevators[eidx].people = 0
+                    self.f.itemconfig(panels[eidx].pcounter, text='People Inside: '+str(elevators[eidx].people))
+                    if elevators[eidx].people == elevators[eidx].capacity:
+                        self.f.itemconfig(panels[eidx].pcounterb, fill='#47c')
+                    elif elevators[eidx].people <= elevators[eidx].capacity:
+                        self.f.itemconfig(panels[eidx].pcounterb, fill='#4c5')
 
 
 
@@ -320,9 +337,9 @@ class App:
                             self.w.itemconfig(floors[i].display.bodytext, text='--')
                         elevators[eidx].dest = elevators[eidx].dest[0:1]
                     else:
-                        elevators[eidx].dest = []
                         for i in elevators[eidx].dest:
                             self.w.itemconfig(floors[i].display.bodytext, text='--')
+                        elevators[eidx].dest = []
                         if elevators[eidx].state!='opened' or elevators[eidx].state!='opening':
                             elevators[eidx].state = 'opening'
 

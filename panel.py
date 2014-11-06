@@ -17,9 +17,11 @@ class Panel(object):
             self.body = w.create_rectangle(350, 350, 500, 510, fill="#000")
         self.x = w.coords(self.body)[0]
         self.y = w.coords(self.body)[1]
-        self.label = w.create_text(self.x+80, self.y-10, text='Elevator'+str(self.num))
+        self.label = w.create_text(self.x+80, self.y-10, text='Elevator - '+str(self.num), font="Purisa 10 bold")
         self.makebuttons(w)
         self.makelabels(w)
+        self.pcounterb = w.create_rectangle(self.x, self.y+200, self.x+150, self.y+240, fill='#4c5')
+        self.pcounter = w.create_text(self.x+75, self.y+220, text='People Inside: 0')
 
     def makebuttons(self, w):
         self.b.append(w.create_rectangle(self.x+50, self.y+120, self.x+100, self.y+160, outline="black", 
@@ -64,8 +66,8 @@ class Panel(object):
         self.blabel.append(w.create_text(w.coords(self.b[7])[0]+25, w.coords(self.b[7])[1]+20, text='7'))
         self.blabel.append(w.create_text(w.coords(self.b[8])[0]+25, w.coords(self.b[8])[1]+20, text='8'))
         self.blabel.append(w.create_text(w.coords(self.b[9])[0]+25, w.coords(self.b[9])[1]+20, text='9'))
-        self.blabel.append(w.create_text(w.coords(self.b[10])[0]+25, w.coords(self.b[10])[1]+20, text='<>'))
-        self.blabel.append(w.create_text(w.coords(self.b[11])[0]+25, w.coords(self.b[11])[1]+20, text='><'))
+        self.blabel.append(w.create_text(w.coords(self.b[10])[0]+25, w.coords(self.b[10])[1]+20, text='<OP>'))
+        self.blabel.append(w.create_text(w.coords(self.b[11])[0]+25, w.coords(self.b[11])[1]+20, text='>CL<'))
         self.bemergencylabel = w.create_text(w.coords(self.b[12])[0]+25, w.coords(self.b[12])[1]+20, text='EM')
         self.pushinlabel = w.create_text(w.coords(self.pushin)[0]+25, w.coords(self.pushin)[1]+20, text='+')
         self.pushoutlabel = w.create_text(w.coords(self.pushout)[0]+25, w.coords(self.pushout)[1]+20, text='-')

@@ -16,7 +16,6 @@ class Elevator(object):
         self.capacity = 6
         self.timer = 0
         self.overloaded = False
-        self.ovlabel = None
 
         # state: moving, closed, opening, opened, closing
         self.state = 'closed'
@@ -34,28 +33,14 @@ class Elevator(object):
 
     def update(self, w, SH, floors):
         """ Called each frame. """
-        if self.overloaded and self.ovlabel==None:
-            if self.people-self.capacity==1:
-                self.ovlabel = w.create_text(self.x+50, self.y+30, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore person')
-            else:
-                self.ovlabel = w.create_text(self.x+50, self.y+30, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore people')
 
         if self.people>self.capacity:
-            w.itemconfig(self.floor.display.body, fill='#f77')
-            w.itemconfig(self.floor.display.bodytext, text='LOAD')
-            if self.people-self.capacity==1:
-                w.itemconfig(self.ovlabel, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore person')
-            else:
-                w.itemconfig(self.ovlabel, text='Overload\nThrow out '+str(self.people-self.capacity)+'\nmore people')
             self.overloaded = True
             if self.state!='opening' and self.state!='opened':
                 self.state='opening'
         else:
             self.overloaded = False
-            if self.ovlabel is not None:
-                w.delete(self.ovlabel)
-                self.ovlabel = None
-
+            
         if self.vel!=0:
             for i in range(10):
 
