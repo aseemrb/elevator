@@ -39,54 +39,6 @@ def simulate():
                             minelevd = abs(e.floor.number - f.number)
 
             if not elevSet:
-                # # If already an ideal elevator is coming
-                # for e in elevators:
-                #     if len(e.dest)==1 and e.dest[0]==f.number:
-                #         elevSet = True
-                #         if e.state=='closed':
-                #             break
-                # if elevSet:
-                #     break
-                # # Finding the elevator that will reach the fastest
-                # elevf1 = None
-                # elevf2 = None
-                # for i in range(f.number-1, -1, -1):
-                #     if len(floors[i].elevs)>0:
-                #         elevSet = False
-                #         for e in floors[i].elevs:
-                #             if (e.people<e.capacity) and len(e.dest)==0:
-                #                 elevf1 = e
-                #                 elevSet = True
-                #                 if e.state=='closed':
-                #                     break
-                #         if elevf1!=None:
-                #             break
-                # for i in range(f.number+1, 10, 1):
-                #     if len(floors[i].elevs)>0:
-                #         elevSet = False
-                #         for e in floors[i].elevs:
-                #             if (e.people<e.capacity) and len(e.dest)==0:
-                #                 elev2 = e
-                #                 elevSet = True
-                #                 if e.state=='closed':
-                #                     break
-                #         if elevf2!=None:
-                #             break
-                # dist1 = 10
-                # dist2 = 10
-                # if elevf1!=None:
-                #     dist1 = f.number-elevf1.floor.number
-                # if elevf2!=None:
-                #     dist1 = elevf2.floor.number-f.number
-                # if elevf1!=None and dist1<=dist2:
-                #     elevf1.dest.append(f.number)
-                #     elevf1.direc = 'up'
-                #     continue
-                # elif elevf2!=None and dist2<=dist1:
-                #     elevf2.dest.append(f.number)
-                #     elevf2.direc = 'down'
-                #     continue
-
                 # Nearest elevator below (moving up or stationary) = elev1
                 for i in range(f.number-1, -1, -1):
                     if len(floors[i].elevs)>0:
@@ -157,8 +109,8 @@ def simulate():
                         f.dwb.on = False
                         if e.state!='opening' and e.state!='opened':
                             e.state = 'opening'
-                        elevSet = True
-                        break
+                    elevSet = True
+                    break
                     if abs(e.floor.number - f.number)<minelevd:
                         elevd = e
                         minelevd = abs(e.floor.number - f.number)
